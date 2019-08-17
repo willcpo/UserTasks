@@ -1,14 +1,6 @@
 import mongoose from "mongoose";
 import config from "../config";
 
-export const Collection = mongoose.model("Collection", { 
-
-	// information
-	info: String
-	
-});
-
-
 const Task = mongoose.Schema({ 
 
 	// information

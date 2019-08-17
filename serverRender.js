@@ -18,7 +18,7 @@ function serverRender (url){
 		return {
 			initialMarkup: ReactDOMServer.renderToString(
 				<StaticRouter location={url} context={{}}>
-					<App initialData = {initialData}/>
+					<App />
 				</StaticRouter>
 			)
 		};

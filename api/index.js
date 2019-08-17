@@ -1,7 +1,9 @@
 // all routes for the api
 import express from "express";
+import mongoose from "mongoose";
+const db = require('./db');
 const Task = mongoose.model('Task');
-//const Feed = mongoose.model('Feed');
+const eLogIn = require('connect-ensure-login');
 
 
 const router = express.Router();

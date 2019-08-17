@@ -4,7 +4,6 @@ const app = express();
 // your code goes here!
 const path = require('path');
 import config from "./config";
-const db = require('./db.js');
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 const sanitize = require("mongo-sanitize");
@@ -15,10 +14,17 @@ const saltRounds = 10;
 const eLogIn = require('connect-ensure-login');
 
 
-
 import apiRouter from "./api/index";
 import sassMiddleware from "node-sass-middleware";
 import serverRender from "./serverRender";
+
+/// middleware for logging parsing and session handling
+//app.use(require('morgan')('combined'));
+app.use(require('cookie-parser')());
+app.use(require('body-parser').urlencoded({ extended: true }));
+app.use(require('body-parser').json())
+app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
+
 
 /// Configure local strategy for passport
 /// this function verrifys the user by looking in up in the database
@@ -26,6 +32,7 @@ import serverRender from "./serverRender";
 /// null if there is no user or the password is wrong, or the use
 passport.use("login",new LocalStrategy(
 	function(username, password, callback) {
+		console.log("login")
 	  User.findOne({ username: username }, function (err, user) {
 		if (err) { return callback(err); }
 		if (!user) { return callback(null, false); }
@@ -44,6 +51,7 @@ passport.use("login",new LocalStrategy(
 
 passport.use("signup",new LocalStrategy(
 	function(username, password, callback) {
+		console.log("signup")
 	  User.findOne({ username: username }, function (err, user) {
 		if (err) { return callback(err); }
 		if (user) { return callback(null, false); }
@@ -67,21 +75,17 @@ passport.use("signup",new LocalStrategy(
 //Passport needs to serialize users into and deserialize users out of the session.
 // the serialization is provided by the id in the database
 passport.serializeUser(function(user, callback) {
+	console.log("serializeUser")
 	callback(null, user.id);
   });
   
 passport.deserializeUser(function(id, callback) {
+	console.log("deserializeUser")
 	User.findById(id, function (err, user) {
 		if (err) { return callback(err); }
 		callback(null, user);
 	});
 });
-
-/// middleware for logging parsing and session handling
-//app.use(require('morgan')('combined'));
-app.use(require('cookie-parser')());
-app.use(require('body-parser').urlencoded({ extended: true }));
-app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
 
 
 
@@ -107,35 +111,37 @@ app.get('/', eLogIn.ensureLoggedIn("/login"),
 
 
 app.get('/login',(req, res)=>{
-	serverRender(req.url)
-		.then( ({initialMarkup}) => {
-			res.render("index",{
-				initialMarkup
-			});
-		});
-	
+	console.log("go to log in")
+	res.render("index",serverRender(req.url) );
 });
 
 app.post('/login', 
-  passport.authenticate('login', { failureRedirect: `/login?message=${encodeURI("Invalid Username or Password")}` }),
+ passport.authenticate('login', { failureRedirect: `/login?message=${encodeURI("Invalid Username or Password")}` }),
   function(req, res) {
-    res.redirect('/stories');
+	if (req.user) {
+        var redir = { redirect: "/tasks" };
+        return res.json(redir);
+  } else {
+        var redir = { redirect: '/login'};
+        return res.json(redir);
+  }
 });
 
 app.post('/signup', 
 	passport.authenticate('signup', { failureRedirect: `/login?message=${encodeURI("Username already taken")}&signup=true` }),
 	function(req, res){
-		res.redirect('/stories');
+		if (req.user) {
+			var redir = { redirect: "/tasks" };
+			return res.json(redir);
+	  } else {
+			var redir = { redirect: '/login'};
+			return res.json(redir);
+	  }
 })
 
 
 app.get('/tasks',eLogIn.ensureLoggedIn("/login"),(req, res)=>{
-	serverRender(req.url)
-		.then( ({initialMarkup,initialData}) => {
-			res.render("index",{
-				initialMarkup
-			});
-		});
+	res.render("index",serverRender(req.url) );
 	
 });
 
@@ -143,10 +149,10 @@ app.get('/tasks',eLogIn.ensureLoggedIn("/login"),(req, res)=>{
 app.get('/logout', eLogIn.ensureLoggedIn("/login"),
   function(req, res){
     req.logout();
-    res.redirect('/signup');
+    res.redirect('/login');
   });
 
 
-server.listen(config.port, config.host, ()=>{
+  app.listen(config.port, config.host, ()=>{
 	console.info("Express listening on port ", config.port);
 });
