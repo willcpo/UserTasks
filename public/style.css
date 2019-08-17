@@ -1,0 +1,41 @@
+.userPane .logout {
+  position: absolute;
+  right: 20px; }
+
+.taskPane .addPane {
+  width: 80%;
+  margin: auto;
+  padding: 40px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  padding-bottom: 16px; }
+
+.taskPane .tasks {
+  width: 90vw;
+  margin: auto;
+  padding: 10px;
+  background-color: #cdd6e8; }
+  .taskPane .tasks .task {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+    max-width: 905px;
+    margin: auto;
+    margin-top: 15px;
+    margin-bottom: 15px; }
+    .taskPane .tasks .task .description {
+      padding: 10px; }
+    .taskPane .tasks .task .date {
+      padding: 10px; }
+    .taskPane .tasks .task .deleteTask {
+      margin: 10px;
+      font-weight: 900;
+      font-size: 15px;
+      padding: 0px; }
+      .taskPane .tasks .task .deleteTask .MuiButton-label {
+        width: 10px; }
+
+body {
+  margin: 0; }
