@@ -4,7 +4,6 @@ import Button from "@material-ui/core/Button";
 import FormControl from '@material-ui/core/FormControl';
 import TextField from '@material-ui/core/TextField';
 import axios from "axios";
-//import * as api from "../api";
 
 class LogInPage extends React.Component {
 
@@ -12,50 +11,49 @@ class LogInPage extends React.Component {
 		super(props);
 
 		this.state = {
-			clickColor: [255,0,0]
+			error:""
 		};
 
 		//Remember to set 'this' to the component for all custom functions
-		this.logIn = this.logIn.bind(this);
-		this.signUp = this.signUp.bind(this);
+		this.createSession = this.createSession.bind(this);
 	}
 
-	logIn(){
-		let username = document.querySelector(".username").childNodes[1].childNodes[0].value
-		let password = document.querySelector(".password").childNodes[1].childNodes[0].value
-		
-		axios.post("/login",{
+	createSession(type){
+
+		let usernameNode = document.querySelector(".username")
+		let username = usernameNode.childNodes[1].childNodes[0].value
+		let passwordNode = document.querySelector(".password")
+		let password = passwordNode.childNodes[1].childNodes[0].value
+
+		if (!username){
+			usernameNode.childNodes[1].classList.add("Mui-error")
+		}
+		if (!password){
+			passwordNode.childNodes[1].classList.add("Mui-error")
+		}
+		if (!username || !password) {
+			this.setState({error:"All fields must be filled out"})	
+			return
+		};
+
+		let setState = this.setState.bind(this)
+
+		axios.post(`/${type}`,{
 			username,
 			password
 		}).then(function (response){
+			console.log(response)
 			if (response.data.redirect == '/tasks') {
 				window.location = "/tasks"
-            } else if (response.data.redirect == '/login'){
-                this.loginError()
-            }
-
-		}).catch(function (error){
-			this.loginError()
-		})
-	}
+			} else if (response.data.redirect == '/login'){
+				setState({error:response.data.message})
+			}
 	
-	signUp(){
-		let username = document.querySelector(".username").childNodes[1].childNodes[0].value
-		let password = document.querySelector(".password").childNodes[1].childNodes[0].value
-	
-		axios.post("/signup",{
-			username,
-			password
-		}).then(function (response){
-			if (response.data.redirect == '/tasks') {
-                window.location = "/tasks"
-            } else if (response.data.redirect == '/login'){
-                his.signUpError()
-            }
-
 		}).catch(function (error){
-			this.signUpError()
+			console.log(error);
+			setState({error:`error with ${type}`})
 		})
+
 	}
 	
 
@@ -93,8 +91,11 @@ class LogInPage extends React.Component {
 						margin="normal"
 					/>
 					<div className="homeButtons">
-						<Button onClick={this.logIn} className="loginButton" variant="contained" color="secondary" className="Login">Log In</Button>
-						<Button onClick={this.signUp} className="SignUpButton" variant="contained" color="primary" className="SignIn" >Sign Up</Button>
+						<Button onClick={this.createSession.bind(this,"login")} className="loginButton" variant="contained" color="secondary" className="Login">Log In</Button>
+						<Button onClick={this.createSession.bind(this,"signup")} className="SignUpButton" variant="contained" color="primary" className="SignIn" >Sign Up</Button>
+					</div>
+					<div className="error">
+						{this.state.error}
 					</div>
 				</Card>
 			

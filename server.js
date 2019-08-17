@@ -112,33 +112,76 @@ app.get('/', eLogIn.ensureLoggedIn("/login"),
 
 app.get('/login',(req, res)=>{
 	console.log("go to log in")
-	res.render("index",{user:"",...serverRender(req.url)} );
+	res.render("index",{user:"", ...serverRender(req.url)} );
 });
 
-app.post('/login', 
- passport.authenticate('login', { failureRedirect: `/login?message=${encodeURI("Invalid Username or Password")}` }),
-  function(req, res) {
-	if (req.user) {
-        var redir = { redirect: "/tasks" };
-        return res.json(redir);
-  } else {
-        var redir = { redirect: '/login'};
-        return res.json(redir);
-  }
-});
-
-app.post('/signup', 
-	passport.authenticate('signup', { failureRedirect: `/login?message=${encodeURI("Username already taken")}&signup=true` }),
-	function(req, res){
-		if (req.user) {
-			var redir = { redirect: "/tasks" };
-			return res.json(redir);
-	  } else {
-			var redir = { redirect: '/login'};
-			return res.json(redir);
-	  }
+app.post('/login',  function(req, res, next) {
+	passport.authenticate('login', function(err, user, info){
+		if (err){
+			console.log(err)
+			res.json({
+				message: "username or password invalid",
+				redirect: "/login"
+			})
+		}
+		else if (!user) { 
+			res.json({
+				message: "username or password invalid",
+				redirect: "/login"
+			})
+		 }
+		else {
+			req.logIn(user, function(err) {
+				if (err) { 
+					res.json({
+						message: "error logging in",
+						redirect: "/login"
+					})
+				 }
+				return res.json({
+					message: "success",
+					redirect: "/tasks"
+				});
+			});
+		}
+	
+	})(req, res, next)
+ 
 })
 
+app.post('/signup',  function(req, res, next) {
+	passport.authenticate('signup', function(err, user, info){
+		if (err){
+			console.log(err)
+			res.json({
+				message: "username already taken",
+				redirect: "/login"
+			})
+		}
+		else if (!user) { 
+			res.json({
+				message: "username already taken",
+				redirect: "/login"
+			})
+		 }
+		else {
+			req.logIn(user, function(err) {
+				if (err) { 
+					res.json({
+						message: "error signing up",
+						redirect: "/login"
+					})
+				 }
+				return res.json({
+					message: "success",
+					redirect: "/tasks"
+				});
+			});
+		}
+	
+	})(req, res, next)
+ 
+})
 
 app.get('/tasks',eLogIn.ensureLoggedIn("/login"),(req, res)=>{
 	let data = {user:req.user.username, ...serverRender(req.url)}
