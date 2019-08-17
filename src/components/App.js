@@ -15,10 +15,14 @@ class App extends React.Component {
 		console.log("rendering App")
 		return(
 			<>		
-				<HeaderBar />
+				
 				<Switch>
 					<Route exact path="/login" component={LogInPage} />
-					<Route exact path="/tasks" component={TaskPage} />
+					<Route exact path="/tasks" render={()=>
+					(<>
+						<HeaderBar />
+						<TaskPage />
+					</>)} />
 				</Switch>
 				
 			</>

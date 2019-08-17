@@ -12,10 +12,6 @@ class HeaderBar extends React.Component {
 	constructor(props){
 		super(props);
 
-		this.state = {
-			user: "Dave",
-		};
-
 		//Remember to set 'this' to the component for all custom functions
 		this.handleClick = this.handleClick.bind(this);
 	}
@@ -44,10 +40,10 @@ class HeaderBar extends React.Component {
 			<AppBar position="static" className="userPane">
 					<Toolbar>
 						<Typography variant="h6"  className="user">
-							Hello {this.state.user}!
+							Hello user!
 						</Typography>
                         <Route exact path="/tasks" render={()=>{
-                            return (<Button color="inherit" className="logout">Logout</Button>)
+                            return (<Button color="inherit" className="logout" onClick={()=>{window.location="/logout"}}>Logout</Button>)
                         }}/>
 					</Toolbar>
 			</AppBar>
