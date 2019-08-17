@@ -112,7 +112,7 @@ app.get('/', eLogIn.ensureLoggedIn("/login"),
 
 app.get('/login',(req, res)=>{
 	console.log("go to log in")
-	res.render("index",serverRender(req.url) );
+	res.render("index",{user:"",...serverRender(req.url)} );
 });
 
 app.post('/login', 
@@ -141,7 +141,9 @@ app.post('/signup',
 
 
 app.get('/tasks',eLogIn.ensureLoggedIn("/login"),(req, res)=>{
-	res.render("index",serverRender(req.url) );
+	let data = {user:req.user.username, ...serverRender(req.url)}
+	console.log(JSON.stringify(data));
+	res.render("index", data);
 	
 });
 
