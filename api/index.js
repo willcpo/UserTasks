@@ -1,6 +1,6 @@
 // all routes for the api
 import express from "express";
-const Task = mongoose.model('Story');
+const Task = mongoose.model('Task');
 //const Feed = mongoose.model('Feed');
 
 
