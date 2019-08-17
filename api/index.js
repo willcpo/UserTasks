@@ -3,104 +3,74 @@ import express from "express";
 import mongoose from "mongoose";
 const db = require('./db');
 const Task = mongoose.model('Task');
+const User = mongoose.model('User');
 const eLogIn = require('connect-ensure-login');
 
 
 const router = express.Router();
 
 
-router.put("/updateUserTask", (req, res)=>{
-	let RSSurl = req.body.RSSurl
+// router.put("/updateUserTask", (req, res)=>{
+// 	let RSSurl = req.body.RSSurl
 
-	User.findOneAndUpdate({username:req.user.username}, { "$pull": {"favoriteFeeds":{ "RSSurl" : RSSurl }} }, { "new": true }, 
-		(error, docs) => {
-			if (error) res.redirect(`/user?message=${encodeURI("Feed cannot be removed")}`)
-			else res.redirect(`/user?message=${encodeURI("Feed successfully removed")}`)	
-	});
+// 	User.findOneAndUpdate({username:req.user.username}, { "$pull": {"favoriteFeeds":{ "RSSurl" : RSSurl }} }, { "new": true }, 
+// 		(error, docs) => {
+// 			if (error) res.redirect(`/user?message=${encodeURI("Feed cannot be removed")}`)
+// 			else res.redirect(`/user?message=${encodeURI("Feed successfully removed")}`)	
+// 	});
 	
-})
+// })
 
-router.post("/removeTask", eLogIn.ensureLoggedIn("/login"), function(req, res){
+router.post("/deleteTask", eLogIn.ensureLoggedIn("/login"), function(req, res){
 	
-	let link = req.body.link
+	let id = req.body.id;
 
-	User.findOneAndUpdate({username:req.user.username}, { "$pull": {"savedStories":{ "link" : link }} }, { "new": true }, 
+	console.log( "deleting id: "+id)
+
+	User.findOneAndUpdate({username:req.user.username}, { "$pull": {"tasks":{ _id: id }} }, { "new": true }, 
 		(error, docs) => {
-			if (error) res.redirect(`/user?message=${encodeURI("Story cannot be removed")}`)
-			else res.redirect(`/user?message=${encodeURI("Story successfully removed")}`)	
+			if (error) res.send(error)
+			else {
+				console.log( "deleted id: "+id)
+				console.log( "docs are now: "+docs)	}
+				res.send(docs)
+				
 	});
 });
 
 router.get('/getTasks', eLogIn.ensureLoggedIn("/login"), function(req, res){
 
- 
-		let feeds = req.user.favoriteFeeds.map((feed)=>{
-			return feed.RSSurl
+		let tasks = req.user.tasks.map((task)=>{
+			return {
+				description: task.description,
+				date: task.date,
+				id: task.id
+			}
 		});
-		feeds = JSON.parse(JSON.stringify(feeds))
-		let stories = [];
+
+		console.log("getting tasks:",tasks);
 		
-		(async () => {
-			for(let i = 0; i < feeds.length;i++){
-				let feed = await parser.parseURL(feeds[i]);
-				
-				stories.push(feed.items.map(item => {
-					return {
-						feedName: feed.title,
-						storyName: item.title,
-						storyUrl: item.link,
-						storyDescription: (item.content.split("<div")[0].split("<table")[0]),
-						datePublished: (item.pubDate || item.isoDate)
-					}
-				}));
-			}
-			
-			stories = stories.reduce((x,y) => x.concat(y), [])
-			
-			if (req.query.searchterms){
-				let patterns = req.query.searchterms.split(" ");
-				let fields = { feedName: true, storyName: true, storyName: true, storyDescription:true };
-				stories = smartSearch(stories, patterns, fields);
-				stories = stories.map((value)=>{
-					return value.entry;
-				})
-			}else{
-				stories.sort(function(a, b) {
-					a = new Date(a.datePublished);
-					b = new Date(b.datePublished);
-					return a>b ? -1 : a<b ? 1 : 0;
-				});
-			}
-			
-			res.send(JSON.stringify(stories))
-		})();
-	
-	   
-
-
+		res.send(JSON.stringify(tasks))
 })
 
 router.post("/postTask", eLogIn.ensureLoggedIn("/login"), function(req, res){
-	
-	if(req.user.favoriteFeeds.some((feed)=>{
-		req.body.storyUrl == feed.link;
-	})){
-		res.send("Already Saved");
-	}
-	console.log(req.body.storyDescription);
-	let story = new Story({
-		feed : req.body.feedName,
-		title : req.body.storyName,
-		link : req.body.storyUrl,
-		description : sanitize(req.body.storyDescription) ,
-		datePublished : req.body.datePublished
+
+	console.log("adding task: ", req.body)
+
+	let task = new Task({
+		description : req.body.description,
+		date : req.body.date,
 	})
 
-	User.findOneAndUpdate({username:req.user.username}, { "$push": { savedStories: story } }, { "new": true }, 
+	User.findOneAndUpdate({username:req.user.username}, { "$push": { tasks: task } }, { "new": true }, 
 		(error, docs) => {
-			if (error) res.send("Couldn't be Saved")
+			if (error){
+				console.log("error");
+				res.send(error)
+			}
 			else{
 				res.send("Saved");
+				console.log("added task: ", docs)
 			} 
 	});
 
