@@ -1,5 +1,5 @@
 ## How to Run
-  1. Clone the
+  1. Clone the repo
   2. run 'npm install' in the shell to install the dependencies
   3. run 'npm run dev' to run the application
   4. Go to localhost:3000 in your browser to see the website
