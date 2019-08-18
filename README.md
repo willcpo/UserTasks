@@ -1,3 +1,11 @@
+## How to Run
+  1. Clone the
+  2. run 'npm install' in the shell to install the dependencies
+  3. run 'npm run dev' to run the application
+  4. Go to localhost:3000 in your browser to see the website
+  5. Create a username and password to log in and out of the app.
+
+# How It Was Built
 ## 1. Express and React
 
 Using Node JS and Express, I created a server that would run and serve an HTML document (crafted with an ejs template). This HTML document with call bundle.js a webpack build that will insert React components and other modules into your client-side data. In React I created two separate components for a login page and a page to manage the list of tasks. I also created a component for the header.
@@ -25,3 +33,6 @@ Form validation was inserted via manual scripts that ran when the submit button 
 ## Bonus: Git Flow
 
 For each of the aforementioned steps, a branch was created, checked out and committed the new step's changes to Github. On Github, the changes were then merged to the master branch. This was to adhere more to a GitFlow type of work style. Branches, where changes occur, should be separated from the main production build until they are perfected and can be merged seamlessly with the existing product.
+
+
+
