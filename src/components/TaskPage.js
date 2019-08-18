@@ -16,7 +16,8 @@ class TaskPage extends React.Component {
 		super(props);
 
 		this.state = {
-			tasks: []
+			tasks: [],
+			error:""
 		};
 		//Remember to set 'this' to the component for all custom functions
 		this.displayTasks = this.displayTasks.bind(this);
@@ -26,7 +27,7 @@ class TaskPage extends React.Component {
 
 	displayTasks(){
 		return this.state.tasks.map((task)=>(
-			<Card className="task">
+			<Card className="task" key={task.id}>
 				<div className="description">{task.description}</div>
 				<div className="date">{task.date}</div>
 				<Button 
@@ -34,7 +35,9 @@ class TaskPage extends React.Component {
 					color="secondary" 
 					className="deleteTask" 
 					onClick={this.deleteTask.bind(this,task.id)}
-				>X</Button>
+				>
+					X
+				</Button>
 			</Card>
 		))
 	}
@@ -42,8 +45,19 @@ class TaskPage extends React.Component {
 	addTask(){
 		
 
-		let description = document.querySelector(".addDescription div").childNodes[1].childNodes[0].value
+		let descriptionNode = document.querySelector(".addDescription div")
+		let description = descriptionNode.childNodes[1].childNodes[0].value
+		descriptionNode.childNodes[1].childNodes[0].value="";
 		let date = document.querySelector(".addDate div div input").value
+
+		if (!description) {
+			descriptionNode.childNodes[1].classList.add("Mui-error")
+			this.setState({error:"Description must be filled out"})	
+			return
+		}else if (this.state.error !=""){
+			this.setState({error:""})
+		};
+
 		console.log("posting task:",description,date)
 		Axios.post('/api/postTask',{
 			description,
@@ -51,11 +65,11 @@ class TaskPage extends React.Component {
 		})
 		.then((response)=>{
 			console.log("response from task post:", response)
+			this.getTaskData();
 		})
 		.catch((error)=>{
 			console.log("error from task post:", error)
 		})
-		this.getTaskData();
 	}
 
 	getTaskData(){
@@ -78,11 +92,11 @@ class TaskPage extends React.Component {
 		})
 			.then((response)=>{
 				console.log("response from posting delete: ", response)
+				this.getTaskData();
 			})
 			.catch((error)=>{
 				console.log("error from posting delete: ",error)
 			})
-			this.getTaskData();
 	}
 
 	componentDidMount(){
@@ -102,6 +116,7 @@ class TaskPage extends React.Component {
 		console.log("rendering Task Page")
 		return (
 			<div className="taskPane">
+				<div className="error">{this.state.error}</div>
 				<div className="addPane">
 					<div className="addDescription">
 						<TextField

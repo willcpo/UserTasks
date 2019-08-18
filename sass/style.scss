@@ -11,7 +11,22 @@
 
 }
 
+
 .taskPane{
+	.error{
+		color: red;
+		font-family: Arial, Helvetica, sans-serif;
+		height: 10px;
+		width: 215px;
+		margin: auto;
+		position: relative;
+		top: 24px;
+
+		@media screen and (max-width:800px){
+			top: 10px;
+			padding: 10px;
+		}
+	}
 	.addPane{
 		width: 80%;
 		margin: auto;
@@ -24,9 +39,22 @@
 
 		}
 		.addDate{
-		
+			padding-left: 20px;
+			padding-right: 20px;
 		}
 		.submitAdd{
+		}
+
+		@media screen and (max-width:800px){
+			flex-direction: column;
+			align-items: center;
+			padding: 0px;
+			margin-bottom: 20px;
+			div{
+				padding: 5px;
+				width: 50vw;
+			}
+			
 		}
 	}
 	.tasks{
@@ -46,11 +74,22 @@
 			margin: auto;
 			margin-top: 15px;
 			margin-bottom: 15px;
+			font-family: Arial, Helvetica, sans-serif;
+			flex-direction: column;
+			text-align: justify;
 			.description{
-				padding: 10px;
+				padding: 20px;
+				order: 3;
+				position: relative;
+				bottom: 10px;
 			}
 			.date{
-				padding: 10px;
+				color: #3f51b5;
+				font-weight: 900;
+				order: 2;
+				padding: 0;
+				position: relative;
+				bottom: 20px;
 			}
 			.deleteTask{
 				align-self: flex-start;
@@ -58,11 +97,15 @@
 				font-weight: 900;
 				font-size: 15px;
 				padding: 0px;
+				order: 1;
+				align-self: flex-end;
+				margin-bottom: 0px;
 				
 				.MuiButton-label{
 					width: 10px;
 				}
 			}
+			
 		}
 	}
 }
@@ -76,8 +119,14 @@ body{
 	 height: 237px;
 }
 
+.loginBackground{
+	background-color: #3f51b5;
+	height: 100vh;
+	width: 100vw;
+	padding-top: 100px; 
+}
+
 .LoginPane{
-		margin-top: 100px;
 		text-align: center;
 		vertical-align: middle;
 		display: flex;

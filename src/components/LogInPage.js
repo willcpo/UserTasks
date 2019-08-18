@@ -74,31 +74,33 @@ class LogInPage extends React.Component {
 
 	render(){
 		return (
-			<div className="LoginPane">
-				<Card>
-					<TextField 
-						id="standard-name"
-						label="Username"
-						margin="normal"
-						className="username"
-					/>
-					<TextField
-						id="standard-password-input"
-						label="Password"
-						className="password"
-						type="password"
-						autoComplete="current-password"
-						margin="normal"
-					/>
-					<div className="homeButtons">
-						<Button onClick={this.createSession.bind(this,"login")} className="loginButton" variant="contained" color="secondary" className="Login">Log In</Button>
-						<Button onClick={this.createSession.bind(this,"signup")} className="SignUpButton" variant="contained" color="primary" className="SignIn" >Sign Up</Button>
-					</div>
-					<div className="error">
-						{this.state.error}
-					</div>
-				</Card>
-			
+			<div className="loginBackground">
+				<div className="LoginPane">
+					<Card>
+						<TextField 
+							id="standard-name"
+							label="Username"
+							margin="normal"
+							className="username"
+						/>
+						<TextField
+							id="standard-password-input"
+							label="Password"
+							className="password"
+							type="password"
+							autoComplete="current-password"
+							margin="normal"
+						/>
+						<div className="homeButtons">
+							<Button onClick={this.createSession.bind(this,"login")} className="loginButton" variant="contained" color="secondary" className="Login">Log In</Button>
+							<Button onClick={this.createSession.bind(this,"signup")} className="SignUpButton" variant="contained" color="primary" className="SignIn" >Sign Up</Button>
+						</div>
+						<div className="error">
+							{this.state.error}
+						</div>
+					</Card>
+				
+				</div>
 			</div>
 		);
 	}
